@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { ChangeRoleDto } from './dto/change-role.dto';
+import { AuthorGuard } from 'src/auth/authorize.guard';
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
@@ -35,6 +36,7 @@ export class UsersController {
   @SetMetadata('role', ['admin'])
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthorGuard)
   @ApiOkResponse({ type: User, isArray: true })
   @ApiBadRequestResponse({
     schema: {
@@ -118,6 +120,7 @@ export class UsersController {
       },
     },
   })
+  @UseGuards(AuthorGuard)
   @Get(':email')
   findOne(@Param('email') email: string) {
     return this.usersService.findOne(email);
@@ -126,6 +129,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Patch('/changeRole')
   @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthorGuard)
   @ApiOkResponse({ type: User })
   @ApiBadRequestResponse({
     schema: {
@@ -181,6 +185,7 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Put(':id')
   @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthorGuard)
   @ApiOkResponse({ type: User })
   @ApiBadRequestResponse({
     schema: {
@@ -238,6 +243,7 @@ export class UsersController {
   }
   @SetMetadata('role', ['admin'])
   @UseGuards(RolesGuard)
+  @UseGuards(AuthorGuard)
   @Delete(':id')
   @ApiOkResponse({ type: User })
   @ApiBadRequestResponse({

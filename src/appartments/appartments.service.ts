@@ -63,6 +63,8 @@ export class AppartmentsService {
     RoomsMin: number,
     RoomsMax: number,
     req,
+    offset,
+    limit,
   ) {
     let apps = await this.appRepo.find({ relations: ['realtor'] });
     if (sizeMin && sizeMax) {
@@ -111,7 +113,15 @@ export class AppartmentsService {
         else return false;
       });
     }
-    return apps;
+    if (limit == 0 || limit == undefined) {
+      limit = 999999999;
+    }
+    if (offset == undefined) {
+      offset = 0;
+    }
+    let last: number = parseInt(limit) + parseInt(offset);
+    console.log(apps);
+    return apps.slice(offset, last);
   }
 
   async findOne(id: number) {

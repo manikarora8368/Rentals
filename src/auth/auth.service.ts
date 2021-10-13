@@ -5,6 +5,11 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import * as redis from 'redis';
+import JWTR from 'jwt-redis';
+import { jwtConstants } from './constants';
+const redisClient = redis.createClient();
+export var jwtr = new JWTR(redisClient);
 @Injectable()
 export class AuthService {
   constructor(
@@ -41,10 +46,21 @@ export class AuthService {
     }
   }
   async login(user: any) {
-    const payload = { id: user.id, sub: user.userId };
+    const payload = { id: user.id, sub: user.userId, jti: `${Math.random()}` };
+    const token = await jwtr.sign(payload, jwtConstants.secret, {
+      expiresIn: '7d',
+    });
     return {
       user: user,
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
+      // access_token: this.jwtService.sign(payload),
+    };
+  }
+  async logout(token) {
+    let { jti } = await jwtr.decode(token);
+    await jwtr.destroy(`${jti}`);
+    return {
+      message: 'User logged out successfuly',
     };
   }
   find(email: string): Promise<User> {

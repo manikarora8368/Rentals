@@ -6,10 +6,21 @@ import { UsersModule } from './users/users.module';
 import { AppartmentsModule } from './appartments/appartments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from '../ormconfig';
-
+// import { type } from 'os';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config), AuthModule, UsersModule, AppartmentsModule],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'db',
+      entities: ['dist/src/**/*.entity.js'],
+      synchronize: true,
+      keepConnectionAlive: true,
+    }),
+    AuthModule,
+    UsersModule,
+    AppartmentsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

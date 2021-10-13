@@ -30,9 +30,12 @@ import {
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { Appartment } from './entities/appartment.entity';
+import { AuthorGuard } from 'src/auth/authorize.guard';
+import { PaginationParams } from './dto/PaginationParams.dto';
 @ApiTags('Apartments')
-@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthorGuard)
 @Controller('apartments')
 export class AppartmentsController {
   constructor(private readonly appartmentsService: AppartmentsService) {}
@@ -158,7 +161,9 @@ export class AppartmentsController {
       },
     },
   })
+  @UseGuards(AuthorGuard)
   findAll(
+    @Query() { offset, limit }: PaginationParams,
     @Query('sizeMin') sizeMin: Number,
     @Query('sizeMax') sizeMax: number,
     @Query('PriceMin') PriceMin: number,
@@ -175,6 +180,8 @@ export class AppartmentsController {
       RoomsMin,
       RoomsMax,
       req,
+      offset,
+      limit,
     );
   }
 

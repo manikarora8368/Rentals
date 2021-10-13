@@ -20,8 +20,11 @@ import {
   ApiUnauthorizedResponse,
   ApiOkResponse,
   ApiConflictResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { User } from './users/entities/user.entity';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { AuthorGuard } from './auth/authorize.guard';
 @ApiTags('Authentication')
 @Controller()
 export class AppController {
@@ -86,6 +89,33 @@ export class AppController {
   @Post('auth/signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.signup(createUserDto);
+  }
+  @ApiUnauthorizedResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', default: 401 },
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiOkResponse()
+  @ApiBadRequestResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', default: 400 },
+        message: { type: 'string' },
+        error: { type: 'string' },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthorGuard)
+  @Get('auth/logout')
+  async logout(@Request() req) {
+    return this.authService.logout(req.headers.authorization.split(' ')[1]);
   }
 
   // @SetMetadata('role',['admin'])
