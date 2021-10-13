@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import * as redis from 'redis';
 import JWTR from 'jwt-redis';
 import { jwtConstants } from './constants';
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(process.env.REDIS_URL);
 export var jwtr = new JWTR(redisClient);
 @Injectable()
 export class AuthService {

@@ -4,15 +4,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
-  const app1 = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.REDIS,
-      options: {
-        url: 'redis://localhost:6379',
-      },
-    },
-  );
+  // const app1 = await NestFactory.createMicroservice<MicroserviceOptions>(
+  //   AppModule,
+  //   {
+  //     transport: Transport.REDIS,
+  //     options: {
+  //       url: 'redis://localhost:6379',
+  //     },
+  //   },
+  // );
+
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
